@@ -57,38 +57,13 @@ namespace Sudoku
 
         public bool IsConsistent => _isConsistent.Value;
 
-        private static bool RowConsistent(int[] places, int row)
+        private static bool TestConsistency(int[] places, Func<int, int> mapIndex)
         {
             int[] test = new int[10];
 
-            foreach (var col in Enumerable.Range(0, 9))
+            foreach (var i in Enumerable.Range(0, 9))
             {
-                var index = col + row * 9;
-                var move = places[index];
-                
-                test[move] += 1;
-
-                if (move == 0)
-                {
-                    continue;
-                }
-
-                if (test[move] > 1)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static bool ColumnConsistent(int[] places, int column)
-        {
-            int[] test = new int[10];
-
-            foreach (var row in Enumerable.Range(0, 9))
-            {
-                var index = column + row * 9;
+                var index = mapIndex(i);
                 var move = places[index];
 
                 test[move] += 1;
@@ -107,30 +82,14 @@ namespace Sudoku
             return true;
         }
 
-        private static bool BoxConsistent(int[] places, int box)
-        {
-            int[] test = new int[10];
+        private static bool RowConsistent(int[] places, int row) =>
+            TestConsistency(places, i => i + row * 9);
 
-            foreach (var cell in Enumerable.Range(0, 9))
-            {
-                var index = 3 * (box % 3) + 3 * 9 * (box / 3) + 9 * (cell / 3) + (cell % 3);
-                var move = places[index];
+        private static bool ColumnConsistent(int[] places, int column) =>
+            TestConsistency(places, i => column + i * 9);
 
-                test[move] += 1;
-
-                if (move == 0)
-                {
-                    continue;
-                }
-
-                if (test[move] > 1)
-                {
-                    return false;
-                }
-            }
-            
-            return true;
-        }
+        private static bool BoxConsistent(int[] places, int box) =>
+            TestConsistency(places, i => 3 * (box % 3) + 3 * 9 * (box / 3) + 9 * (i / 3) + (i % 3));
 
         private static bool ComputeConsistency(int[] places)
         {
