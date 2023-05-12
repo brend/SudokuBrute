@@ -1,26 +1,13 @@
-﻿var filename = Environment.GetCommandLineArgs().Skip(1).FirstOrDefault();
-
-if (filename == null)
+﻿if (Sudoku.Arguments.ReadBoardFromInput() is Sudoku.Board board)
 {
-    Console.Error.WriteLine("Usage: sudoku <puzzle filename>");
-    return;
-}
+    var solver = new Sudoku.Solver();
 
-var text = File.ReadAllText(filename);
-var boardData =
-    text.ToCharArray()
-        .Where(c => !new[]{',', ' ', '\n', '\r', '\t'}.Contains(c))
-        .Select(c => int.Parse("" + c))
-        .ToArray();
-var board = new Sudoku.Board(boardData);
-var solver = new Sudoku.Solver();
-
-if (solver.Solve(board) is Sudoku.Board solution)
-{
-    Console.WriteLine("Solution:");
-    Console.WriteLine(solution.Dump());
-}
-else 
-{
-    Console.WriteLine("No solution found");
+    if (solver.Solve(board) is Sudoku.Board solution)
+    {
+        Console.WriteLine(solution.Dump());
+    }
+    else 
+    {
+        Console.Error.WriteLine("No solution found");
+    }
 }
