@@ -7,32 +7,30 @@ namespace Sudoku
     {
         public Board(int[] places)
         {
-            Places = (int[])places.Clone();
-            IsConsistent = ComputeConsistency(Places);
-            IsSolved = IsConsistent && Array.IndexOf(Places, 0) < 0;
-        }
+            var myPlaces = (int[])places.Clone();
+            
+            Places = myPlaces;
 
-        public Board(): this(new int[9 * 9])
-        {
-        }
-
-        public Board(Board b): this(b.Places)
-        {
+            _isConsistent = new Lazy<bool>(() => ComputeConsistency(myPlaces));
         }
 
         public Board(Board b, Place p, Move m)
         {
-            Places = (int[])b.Places.Clone();
+            var myPlaces = (int[])b.Places.Clone();
+
+            Places = myPlaces;
             Places[p] = m;
-            IsConsistent = ComputeConsistency(Places);
-            IsSolved = IsConsistent && Array.IndexOf(Places, 0) < 0;
+
+            _isConsistent = new Lazy<bool>(() => ComputeConsistency(myPlaces));
         }
 
         private int[] Places { get; set; }
 
-        public bool IsSolved { get; }
+        public bool IsSolved => IsConsistent && Array.IndexOf(Places, 0) < 0;
 
-        public bool IsConsistent { get; }
+        private Lazy<bool> _isConsistent;
+
+        public bool IsConsistent => _isConsistent.Value;
 
         private static bool ComputeConsistency(int[] places)
         {
