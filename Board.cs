@@ -7,6 +7,21 @@ namespace Sudoku
     {
         public Board(int[] places)
         {
+            if (places == null)
+            {
+                throw new ArgumentNullException(nameof(places));
+            }
+
+            if ((places.Length) < 81)
+            {
+                throw new ArgumentException("expected 81 integers", nameof(places));
+            }
+
+            if (places.Any(i => i < 0 || i > 9))
+            {
+                throw new ArgumentException("expected only integers between 0 and 9 inclusively", nameof(places));
+            }
+
             var myPlaces = (int[])places.Clone();
             
             Places = myPlaces;
@@ -16,6 +31,16 @@ namespace Sudoku
 
         public Board(Board b, Place p, Move m)
         {
+            if (p < 0 || p >= b.Places.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(p));
+            }
+
+            if (m < 1 || m > 9)
+            {
+                throw new ArgumentOutOfRangeException(nameof(m));
+            }
+
             var myPlaces = (int[])b.Places.Clone();
 
             Places = myPlaces;
