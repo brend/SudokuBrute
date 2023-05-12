@@ -14,8 +14,6 @@ namespace Sudoku
 
             while (queue.Count > 0)
             {
-                Console.WriteLine($"{queue.Count} boards left to try");
-
                 var board = queue.Dequeue();
 
                 if (board.IsSolved)
