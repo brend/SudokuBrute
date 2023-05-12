@@ -57,74 +57,90 @@ namespace Sudoku
 
         public bool IsConsistent => _isConsistent.Value;
 
-        private static bool ComputeConsistency(int[] places)
+        private static bool RowConsistent(int[] places, int row)
         {
-            foreach (var row in Enumerable.Range(0, 9))
-            {
-                int[] test = new int[10];
-
-                foreach (var col in Enumerable.Range(0, 9))
-                {
-                    var index = col + row * 9;
-                    var move = places[index];
-                    
-                    test[move] += 1;
-
-                    if (move == 0)
-                    {
-                        continue;
-                    }
-
-                    if (test[move] > 1)
-                    {
-                        return false;
-                    }
-                }
-            }
+            int[] test = new int[10];
 
             foreach (var col in Enumerable.Range(0, 9))
             {
-                int[] test = new int[10];
+                var index = col + row * 9;
+                var move = places[index];
+                
+                test[move] += 1;
 
-                foreach (var row in Enumerable.Range(0, 9))
+                if (move == 0)
                 {
-                    var index = col + row * 9;
-                    var move = places[index];
+                    continue;
+                }
 
-                    test[move] += 1;
-
-                    if (move == 0)
-                    {
-                        continue;
-                    }
-
-                    if (test[move] > 1)
-                    {
-                        return false;
-                    }
+                if (test[move] > 1)
+                {
+                    return false;
                 }
             }
 
-            foreach (var box in Enumerable.Range(0, 9))
+            return true;
+        }
+
+        private static bool ColumnConsistent(int[] places, int column)
+        {
+            int[] test = new int[10];
+
+            foreach (var row in Enumerable.Range(0, 9))
             {
-                int[] test = new int[10];
+                var index = column + row * 9;
+                var move = places[index];
 
-                foreach (var cell in Enumerable.Range(0, 9))
+                test[move] += 1;
+
+                if (move == 0)
                 {
-                    var index = 3 * (box % 3) + 3 * 9 * (box / 3) + 9 * (cell / 3) + (cell % 3);
-                    var move = places[index];
+                    continue;
+                }
 
-                    test[move] += 1;
+                if (test[move] > 1)
+                {
+                    return false;
+                }
+            }
 
-                    if (move == 0)
-                    {
-                        continue;
-                    }
+            return true;
+        }
 
-                    if (test[move] > 1)
-                    {
-                        return false;
-                    }
+        private static bool BoxConsistent(int[] places, int box)
+        {
+            int[] test = new int[10];
+
+            foreach (var cell in Enumerable.Range(0, 9))
+            {
+                var index = 3 * (box % 3) + 3 * 9 * (box / 3) + 9 * (cell / 3) + (cell % 3);
+                var move = places[index];
+
+                test[move] += 1;
+
+                if (move == 0)
+                {
+                    continue;
+                }
+
+                if (test[move] > 1)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        private static bool ComputeConsistency(int[] places)
+        {
+            foreach (var i in Enumerable.Range(0, 9))
+            {
+                if (!(RowConsistent(places, i)
+                    && ColumnConsistent(places, i)
+                    && BoxConsistent(places, i)))
+                {
+                    return false;
                 }
             }
 
