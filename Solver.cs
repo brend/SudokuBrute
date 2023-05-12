@@ -19,7 +19,7 @@ namespace Sudoku
 
                 var board = queue.Dequeue();
 
-                if (board.IsSolved())
+                if (board.IsSolved)
                 {
                     return board;
                 }
@@ -38,12 +38,7 @@ namespace Sudoku
             return null;
         }
 
-        Place? GetFreePlace(Board board)
-        {
-            int index = Array.IndexOf(board.Places, 0);
-
-            return index < 0 ? null : index;
-        }
+        Place? GetFreePlace(Board board) => board.GetFreePlace();
 
         Move? GetMove(Board board, Place place)
         {
@@ -51,7 +46,7 @@ namespace Sudoku
             {
                 var attempt = new Board(board, place, move);
 
-                if (attempt.IsConsistent())
+                if (attempt.IsConsistent)
                 {
                     return move;
                 }
@@ -66,7 +61,7 @@ namespace Sudoku
             {
                 var attempt = new Board(board, place, move);
 
-                if (attempt.IsConsistent())
+                if (attempt.IsConsistent)
                 {
                     yield return move;
                 }

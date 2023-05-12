@@ -8,6 +8,8 @@ namespace Sudoku
         public Board(int[] places)
         {
             Places = (int[])places.Clone();
+            IsConsistent = ComputeConsistency(Places);
+            IsSolved = IsConsistent && Array.IndexOf(Places, 0) < 0;
         }
 
         public Board(): this(new int[9 * 9])
@@ -18,19 +20,21 @@ namespace Sudoku
         {
         }
 
-        public Board(Board b, Place p, Move m): this(b)
+        public Board(Board b, Place p, Move m)
         {
+            Places = (int[])b.Places.Clone();
             Places[p] = m;
+            IsConsistent = ComputeConsistency(Places);
+            IsSolved = IsConsistent && Array.IndexOf(Places, 0) < 0;
         }
 
-        public int[] Places { get; set; }
+        private int[] Places { get; set; }
 
-        public bool IsSolved()
-        {
-            return IsConsistent() && Array.IndexOf(Places, 0) < 0;
-        }
+        public bool IsSolved { get; }
 
-        public bool IsConsistent()
+        public bool IsConsistent { get; }
+
+        private static bool ComputeConsistency(int[] places)
         {
             foreach (var row in Enumerable.Range(0, 9))
             {
@@ -39,7 +43,7 @@ namespace Sudoku
                 foreach (var col in Enumerable.Range(0, 9))
                 {
                     var index = col + row * 9;
-                    var move = Places[index];
+                    var move = places[index];
                     
                     test[move] += 1;
 
@@ -62,7 +66,7 @@ namespace Sudoku
                 foreach (var row in Enumerable.Range(0, 9))
                 {
                     var index = col + row * 9;
-                    var move = Places[index];
+                    var move = places[index];
 
                     test[move] += 1;
 
@@ -85,7 +89,7 @@ namespace Sudoku
                 foreach (var cell in Enumerable.Range(0, 9))
                 {
                     var index = 3 * (box % 3) + 3 * 9 * (box / 3) + 9 * (cell / 3) + (cell % 3);
-                    var move = Places[index];
+                    var move = places[index];
 
                     test[move] += 1;
 
@@ -108,5 +112,12 @@ namespace Sudoku
             string.Join("\n",
                 Places.Chunk(9).Select(row => string.Join(" ", row))
             );
+
+        public Place? GetFreePlace() 
+        {
+            int index = Array.IndexOf(Places, 0);
+
+            return index < 0 ? null : index;
+        }
     }
 }
